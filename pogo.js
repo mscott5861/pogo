@@ -31,14 +31,18 @@ let arpPing = (inhabitant) => {
 
     if (inhabitant.present !== false && timeElapsed > absenceThreshold) {
       inhabitant.present = false;
+      // Replace the console.log with a PUT request switching presence of inhabitant to "OFF"
       console.log(inhabitant.name + " is not present at " + today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds());
     }
   } else {
+    
     if (inhabitant.present !== true) {
-      inhabitant.present = true;
-      inhabitant.lastPresent = Date.now();
+      // Replace the console.log with a PUT request switching presence of inhabitant to "ON"
       console.log(inhabitant.name + " arrived at " + today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds());
     }
+
+    inhabitant.lastPresent = Date.now();
+    inhabitant.present = true;
   }; 
  });
 }
