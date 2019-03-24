@@ -1,6 +1,6 @@
 ### POGO (Present: On, Gone: Off)
 
-An Node.js experiment in using `arp ping` to establish presence of home inhabitants. ARP ping is reported to be more reliable than ICMP for this use particular use case, which involves establishing presence through confirming network connectivity of Android phones, each operating on Oreo or above.
+A Node.js experiment in using `arp ping` to establish presence of home inhabitants. ARP ping is reported to be more reliable than ICMP for this use particular use case, which involves establishing presence through confirming network connectivity of Android phones, each operating on Oreo or above.
 
 The end goal is to develop a centralized means of reliably tracking presence for all home inhabitants, a notoriously difficult problem to solve in home automation.
 
