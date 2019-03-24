@@ -1,0 +1,11 @@
+{
+  "name": "pogo",
+  "version": "0.0.1",
+  "description": "Present On, Gone Off",
+  "main": "pogo.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "M. Adams",
+  "license": "ISC"
+}
