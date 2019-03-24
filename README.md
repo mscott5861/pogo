@@ -6,19 +6,18 @@ The end goal is to develop a centralized means of reliably tracking presence for
 
 ### Dependencies
 
-An `npm` package, `arping`, is used to wrap the raw sockets provided by an additional `npm` package, `raw-sockets`. This in turn depends on the `libpcap-dev` C library.
+* [arping](https://github.com/dresende/node-arping) (node module)
+* [raw-sockets](https://github.com/nospaceships/node-raw-socket) (node module)
+* [libpcap-dev](https://packages.debian.org/stretch/libpcap-dev) (C library)
 
-In Debian, this can be gotten using:
-
-`sudo apt-get install libpcap-dev`
 
 ### Installation and Usage
 
 #### Debian
 
 ```bash
-sudo apt-get install libpcap-dev
 git clone https://github.com/mscott5861/pogo.git
+sudo apt-get install libpcap-dev
 npm install
 sudo cp pogo.service /etc/systemd/system
 cd .. && sudo cp -rf pogo /var/www/
