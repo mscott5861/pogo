@@ -19,8 +19,9 @@ The end goal is to develop a centralized means of reliably tracking presence for
 git clone https://github.com/mscott5861/pogo.git
 sudo apt-get install libpcap-dev
 npm install
-sudo cp pogo.service /etc/systemd/system
+sudo cp pogo.service /etc/systemd/system/
 cd .. && sudo cp -rf pogo /var/www/
+sudo chmod +x /var/www/pogo/pogo.js
 sudo systemctl enable pogo.service
 sudo systemctl start pogo.service
 ```
