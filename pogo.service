@@ -4,10 +4,10 @@ Description=Pogo
 [Service]
 ExecStart=/var/www/pogo/pogo.js
 Restart=always
-User=nobody
-Group=nogroup
+User=root
+Group=root
 Environment=PATH=/usr/bin:/usr/local/bin
-Envrionment=NODE_ENV=production
+Environment=NODE_ENV=production
 WorkingDirectory=/var/www/pogo
 
 [Install]

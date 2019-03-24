@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 const arp = require('arping');
 const config = require('./config');
 const fs = require('fs');

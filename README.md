@@ -20,8 +20,10 @@ In Debian, this can be gotten using:
 sudo apt-get install libpcap-dev
 git clone https://github.com/mscott5861/pogo.git
 npm install
-# Have to execute this with superuser privileges because it accesses raw sockets
-sudo node pogo.js
+sudo cp pogo.service /etc/systemd/system
+cd .. && sudo cp -rf pogo /var/www/
+sudo systemctl enable pogo.service
+sudo systemctl start pogo.service
 ```
 
 The program expects an additional javascript file, `config.js`, present at the root directory. This file should be structured as follows:
@@ -45,4 +47,4 @@ module.exports = {
 ```
 ### Current State
 
-Not particularly useful in its current state. Just logging to the console.
+Inspect your log (located at `/var/www/pogo/presence.log`) to confirm against manual records of presence.
