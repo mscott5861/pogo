@@ -1,20 +1,20 @@
 const arp = require('arping');
 const config = require('./config');
+const fs = require('fs');
+
 
 //----------------------------------------------------------------------------------------------
-// TODO: Currently just logging to the console. Next steps:
-//  1. Begin logging presence/absence to a databse
-//  2. Concurently keep a manual log of when people are present/absent
-//  3. Compare manual log with database to determine reliability
-//  4. Set up server for communication with Hubitat (trigger virtual switches on presence/
-//     absence for automating Home/Away modes)
+//  TODO: After testing reliability--and if reliable--set up server for communication with Hubitat 
+//  (trigger virtual switches on presence/absence for automating Home/Away modes)
 //----------------------------------------------------------------------------------------------
+
 
 let intervalID = setInterval(() => {
   for (let i in config.inhabitants) {
     arpPing(config.inhabitants[i]);
   }
 }, config.pingInterval || 10000);
+
 
 let arpPing = (inhabitant) => {
  arp.ping(inhabitant.ipAddress, (err, info) => {
@@ -27,18 +27,21 @@ let arpPing = (inhabitant) => {
     // present at a time whose distance from now is greater than this threshold.
     //----------------------------------------------------------------------------------------------
     let timeElapsed = Date.now() - inhabitant.lastPresent,
-        absenceThreshold = config.absenceThreshold || 450000;
+        absenceThreshold = config.absenceThreshold || 400000;
 
     if (inhabitant.present !== false && timeElapsed > absenceThreshold) {
       inhabitant.present = false;
-      // Replace the console.log with a PUT request switching presence of inhabitant to "OFF"
-      console.log(inhabitant.name + " is not present at " + today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds());
+      fs.appendFile('./presence.log', inhabitant.name + " departed at " + today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds() + '\n', (err) => {
+        if (err) throw err;
+      });
     }
   } else {
     
     if (inhabitant.present !== true) {
-      // Replace the console.log with a PUT request switching presence of inhabitant to "ON"
-      console.log(inhabitant.name + " arrived at " + today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds());
+      fs.appendFile('./presence.log', inhabitant.name + " arrived at " + today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds() + '\n', (err) => {
+        if (err) throw err;
+      });
+
     }
 
     inhabitant.lastPresent = Date.now();
