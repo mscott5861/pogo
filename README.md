@@ -32,10 +32,12 @@ module.exports = {
     name: "user1",
     ipAddress: "some-ip-address",
     present: null,
+    lastPresent: 0,
   },{
     name: "user2",
     ipAddress: "some-ip-address",
     present: null,
+    lastPresent: 0,
   }, ...additional Objects for each user],
   pingInterval: some-int-in-ms // Interval by which to execute arp ping,
   absenceThreshold: some-int-in-ms // Interval after which to mark inhabitant as gone
