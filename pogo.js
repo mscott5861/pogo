@@ -1,14 +1,10 @@
 #!/usr/bin/env node
 
 const arp = require('arping'),
-      config = require('./config'),
-      fs = require('fs');
+      config = require('/etc/home-core/config'),
+      fs = require('fs'),
+      http = require('http');
 
-
-//----------------------------------------------------------------------------------------------
-//  TODO: After testing reliability--and if reliable--set up server for communication with Hubitat 
-//  (trigger virtual switches on presence/absence for automating Home/Away modes)
-//----------------------------------------------------------------------------------------------
 
 
 const intervalID = setInterval(() => {
@@ -18,67 +14,90 @@ const intervalID = setInterval(() => {
 }, config.pingInterval || 10000);
 
 
-const arpPing = (inhabitant) => {
- arp.ping(inhabitant.ipAddress, (err, info) => {
+
+const getTimestamp = () => {
   let today = new Date();
-  if (err) {
-    //----------------------------------------------------------------------------------------------
-    // Certain phones seem to drop into and off the network at regular intervals when sleeping, but 
-    // of course will stay off the network entirely when outside of the LAN. We configure an 
-    // absenceThreshold in config.js, and only mark the inhabitant as gone if they were last marked 
-    // present at a time whose distance from now was greater than this threshold (e.g., 6 minutes)
-    //----------------------------------------------------------------------------------------------
-    let timeElapsed = Date.now() - inhabitant.lastPresent,
-        absenceThreshold = config.absenceThreshold || 400000;
-
-    if (inhabitant.present !== false && timeElapsed > absenceThreshold) {
-      inhabitant.present = false;
-
-      fs.appendFile('./presence.log', inhabitant.name + " departed at " + today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds() + '\n', (err) => {
-        if (err) throw err;
-      });
-
-      checkCumulativePresence();
-    }
-  } else {
-    if (inhabitant.present !== true) {
-      fs.appendFile('./presence.log', inhabitant.name + " arrived at " + today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds() + '\n', (err) => {
-        if (err) throw err;
-      });
-    }
-
-    inhabitant.lastPresent = Date.now();
-    inhabitant.present = true;
-
-    if (config.homeUnoccupied == true) {
-      config.homeUnoccupied = false;
-      //--------------------------------------------------------------------------------------------
-      // TODO: Here's where we'd send a PUT request to update the virtual switch Away mode to 'OFF'
-      //--------------------------------------------------------------------------------------------
-      fs.appendFile('./presence.log', "Home is occupied as of " + today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds() + '\n', (err) => {
-        if (err) throw err;
-      });
-    }
-  }; 
- });
+  return String(today.getMonth()).padStart(2, '0') + '/' + String(today.getDate()).padStart(2, '0') + '/' + String(today.getFullYear()) + ' ' + String(today.getHours()).padStart(2, '0') + ':' + String(today.getMinutes()).padStart(2, '0') + ':' + String(today.getSeconds()).padStart(2, '0') + ' - ';
 }
+
+
+
+const appendToLog = (logMsg) => {
+  fs.appendFile('/var/log/pogo.log', getTimestamp() + logMsg + '\n', (err) => {
+    if (err) throw err;
+  });
+}
+
+
+
+const issueCommandToHubitat = (deviceID, command) => {
+  const url = 'http://' + config.hubitatIPAddress + '/apps/api/97/devices/' + deviceID + '/' + command + '?access_token=' + config.hubitatAccessToken;
+  http.get(url, (res) => {
+    const { statusCode } = res;
+    
+    if (statusCode !== 200) {
+      appendToLog('Request to deviceID #' + deviceID + ' failed (' + url + ')');
+    }
+  });
+}
+
+
+
+const arpPing = (inhabitant) => {
+  if (config.restarted) {
+    appendToLog('Service restarted');
+    config.restarted = false;
+  }
+
+  arp.ping(inhabitant.ipAddress, (err, info) => {
+    if (err) {
+      //----------------------------------------------------------------------------------------------
+      // Certain phones seem to drop into and off the network at regular intervals when sleeping, but 
+      // of course will stay off the network entirely when outside of the LAN. We configure an 
+      // absenceThreshold in config.js, and only mark the inhabitant as gone if they were last marked 
+      // present at a time whose distance from now was greater than this threshold (e.g., 6 minutes)
+      //----------------------------------------------------------------------------------------------
+      let timeElapsed = Date.now() - inhabitant.lastPresent,
+          absenceThreshold = config.absenceThreshold || 400000;
+
+      if (inhabitant.present !== false && timeElapsed > absenceThreshold) {
+        inhabitant.present = false;
+        appendToLog(inhabitant.name + ' departed');
+        issueCommandToHubitat(inhabitant.deviceID, 'off');
+        checkCumulativePresence();
+      }
+    } else {
+      if (inhabitant.present !== true) {
+        appendToLog(inhabitant.name + ' arrived');
+        issueCommandToHubitat(inhabitant.deviceID, 'on');
+      }
+
+      inhabitant.lastPresent = Date.now();
+      inhabitant.present = true;
+
+      if (config.homeUnoccupied == true) {
+        config.homeUnoccupied = false;
+        appendToLog('Home is occupied');
+        issueCommandToHubitat(config.awayModeDeviceID, 'off');
+      }
+    }; 
+  });
+}
+
+
 
 const checkCumulativePresence = () => {
   let everyoneAbsent = true;
 
   for (let i in config.inhabitants) {
-    if (config.inhabitants[i].present == true) {
+    if (config.inhabitants[i].present === true || config.inhabitants[i].present === null) {
       everyoneAbsent = false;
     }
   }
 
   if (everyoneAbsent) {
     config.homeUnoccupied = true;
-    //--------------------------------------------------------------------------------------------
-    // TODO: Here's where we'd send a PUT request to update the virtual switch Away mode to 'ON'
-    //--------------------------------------------------------------------------------------------
-    fs.appendFile('./presence.log', "Home is empty as of " + today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds() + '\n', (err) => {
-      if (err) throw err;
-    });
+    appendToLog('Home is empty');
+    issueCommandToHubitat(config.awayModeDeviceID, 'on');
   }
 }

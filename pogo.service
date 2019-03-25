@@ -2,11 +2,11 @@
 Description=Pogo
 
 [Service]
-ExecStart=/var/www/pogo/pogo.js
+ExecStart=/home/empedocles/Repos/pogo/pogo.js
 Restart=always
 Environment=PATH=/usr/bin:/usr/local/bin
 Environment=NODE_ENV=production
-WorkingDirectory=/var/www/pogo
+WorkingDirectory=/home/empedocles/Repos/pogo
 
 [Install]
 WantedBy=multi-user.target
