@@ -33,7 +33,7 @@ sudo systemctl enable pogo.service
 sudo systemctl start pogo.service
 ```
 
-The program expects an additional javascript file, `config.js`, present at `/etc/home-core/config.js'. Give this file `0600` permissions, and structure it as follows:
+The program expects an additional javascript file, `config.js`, present at `/etc/home-core/config.js`. Give this file `0600` permissions, and structure it as follows:
 
 ```javascript
 module.exports = {
@@ -54,7 +54,7 @@ module.exports = {
   absenceThreshold: some-int-in-ms // Interval after which to mark inhabitant as gone,
   restarted: true,
   hubitatAccessToken: "access-token-given-by-hubitat-maker-api",
-  hubitatIPAddress: "ip-address-of-hubitat-hub',
+  hubitatIPAddress: "ip-address-of-hubitat-hub",
   awayModeDeviceID: "away-mode-virtual-switch-device-id-from-maker-api",
 }
 ```

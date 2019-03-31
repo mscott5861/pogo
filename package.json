@@ -1,13 +1,21 @@
 {
   "name": "pogo",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "Present On, Gone Off",
   "main": "pogo.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "sudo node src/pogo.js"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mscott5861/pogo.git"
+  },
+  "keywords": ["hubitat", "home automation", "smarthome"],
   "author": "M. Adams",
   "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/mscott5861/pogo/issues"
+  },
   "devDependencies": {
     "arping": "^0.1.0",
     "raw-socket": "^1.6.4"
