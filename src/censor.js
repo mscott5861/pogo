@@ -9,8 +9,6 @@ module.exports = {
   _awayModeDeviceID: 0,
   _homeObject: {},
   _inhabitants: [],
-  _shouldLog: false,
-  _shouldStore: false,
   //------------------------------------------------
   // Setters
   //------------------------------------------------
@@ -26,12 +24,6 @@ module.exports = {
   setInhabitants: function(inhabitants) {
     this._inhabitants = inhabitants;
   },
-  shouldLog: function(shouldLog) {
-    this._shouldLog = shouldLog;
-  },
-  shouldStore: function(shouldStore) {
-    this._shouldStore = shouldStore;
-  },
   //------------------------------------------------
   // Private methods
   //------------------------------------------------
@@ -46,7 +38,7 @@ module.exports = {
 
     if (everyoneAbsent) {
       this._homeObject.setHomeUnoccupied(true);
-      this._shouldLog && log.appendToLog('Home is empty');
+      log.levelAtLeast('INFO') > 0 && log.appendToLog('Home is empty');
       dispatch.issueCommandToHubitat(this._awayModeDeviceID, 'on');
     }
   },
@@ -61,13 +53,13 @@ module.exports = {
 
         if (inhabitant.present && timeElapsed > absenceThreshold) {
           inhabitant.present = false;
-          this._shouldLog && log.appendToLog(inhabitant.name + ' departed');
+          log.levelAtLeast('INFO') > 0 && log.appendToLog(inhabitant.name + ' departed');
           dispatch.issueCommandToHubitat(inhabitant.deviceID, 'off');
           this._checkCumulativePresence();
         }
       } else {
         if (!inhabitant.present) {
-          this._shouldLog && log.appendToLog(inhabitant.name + ' arrived');
+          log.levelAtLeast('INFO') && log.appendToLog(inhabitant.name + ' arrived');
           dispatch.issueCommandToHubitat(inhabitant.deviceID, 'on');
         }
 
@@ -76,7 +68,7 @@ module.exports = {
 
         if (this._homeObject.homeUnoccupied()) {
           this._homeObject.setHomeUnoccupied(false);
-          this._shouldLog && log.appendToLog('Home is occupied');
+          log.levelAtLeast('INFO') && log.appendToLog('Home is occupied');
           dispatch.issueCommandToHubitat(this._awayModeDeviceID, 'off');
         }
       }; 

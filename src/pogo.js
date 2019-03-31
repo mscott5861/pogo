@@ -6,25 +6,25 @@ const censor = require('./censor'),
       dispatch = require('./dispatch'),
       inhabitants = require('./inhabitants'),
       home = require('./home'),
-      log = require('./log');
+      log = require('./log'),
+      server = require('./server');
 
 
 
 class Pogo {
   init() {
-    inhabitants.setInhabitants(config.inhabitants);
-    
     censor.setAbsenceThreshold(config.absenceThreshold);
     censor.setAwayModeDeviceID(config.awayModeDeviceID);
     censor.setHomeObject(home);
-    censor.shouldLog(config.shouldLog);
-    censor.shouldStore(config.shouldStore);
     
     dispatch.setHubitatIP(config.hubitatIPAddress);
     dispatch.setHubitatAccessToken(config.hubitatAccessToken);
+    
+    inhabitants.setInhabitants(config.inhabitants);
+    log.setLogLevel(config.logLevel);
 
     if (config.restarted) {
-      config.shouldLog && log.appendToLog('Service restarted');
+      log.levelAtLeast('DEBUG') && log.appendToLog('Service restarted');
       config.restarted = false;
     }
 
