@@ -1,45 +1,38 @@
 const arp = require('arping'),
-      log = require('./log'),
-      dispatch = require('./dispatch');
+      dispatch = require('./dispatch'),
+      home = require('./home'),
+      hubitat = require('./hubitat'),
+      inhabitants = require('./inhabitants'),
+      log = require('./log');
 
 
 
 module.exports = {
   _absenceThreshold: 0,
-  _awayModeDeviceID: 0,
-  _homeObject: {},
-  _inhabitants: [],
   //------------------------------------------------
   // Setters
   //------------------------------------------------
   setAbsenceThreshold: function(absenceThreshold) {
     this._absenceThreshold = absenceThreshold;
   },
-  setAwayModeDeviceID: function(awayModeDeviceID) {
-    this._awayModeDeviceID = awayModeDeviceID;
-  },
-  setHomeObject: function(homeObject) {
-    this._homeObject = homeObject;
-  },
-  setInhabitants: function(inhabitants) {
-    this._inhabitants = inhabitants;
-  },
   //------------------------------------------------
   // Private methods
   //------------------------------------------------
   _checkCumulativePresence: function() {
-    let everyoneAbsent = true;
+    let everyoneAbsent = true,
+        users = inhabitants.getInhabitants();
 
-    for (let i in this._inhabitants) {
-      if (this._inhabitants[i].present === true || this._inhabitants[i].present === null) {
+    for (let i in users) {
+      if (users[i].present === true || users[i].present === null) {
         everyoneAbsent = false;
       }
     }
 
     if (everyoneAbsent) {
-      this._homeObject.setHomeUnoccupied(true);
-      log.levelAtLeast('INFO') > 0 && log.appendToLog('Home is empty');
-      dispatch.issueCommandToHubitat(this._awayModeDeviceID, 'on');
+      home.setHomeUnoccupied(true);
+      log.levelAtLeast('INFO') && log.appendToLog('Home is empty');
+      log.levelAtLeast('DEBUG') && log.appendToLog(JSON.stringify(users));
+      dispatch.issueCommandToHubitat(hubitat.getAwayModeDeviceID(), 'on');
     }
   },
   //------------------------------------------------
@@ -66,10 +59,10 @@ module.exports = {
         inhabitant.lastPresent = Date.now();
         inhabitant.present = true;
 
-        if (this._homeObject.homeUnoccupied()) {
-          this._homeObject.setHomeUnoccupied(false);
+        if (home.homeUnoccupied()) {
+          home.setHomeUnoccupied(false);
           log.levelAtLeast('INFO') && log.appendToLog('Home is occupied');
-          dispatch.issueCommandToHubitat(this._awayModeDeviceID, 'off');
+          dispatch.issueCommandToHubitat(hubitat.getAwayModeDeviceID(), 'off');
         }
       }; 
     });

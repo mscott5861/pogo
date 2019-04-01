@@ -3,10 +3,22 @@ const fs = require('fs');
 
 
 module.exports = {
-  _logLevel: '',
+  _logLevel: 0,
   _getTimestamp: function() {
     let today = new Date();
     return String(today.getMonth() + 1).padStart(2, '0') + '/' + String(today.getDate()).padStart(2, '0') + '/' + String(today.getFullYear()) + ' ' + String(today.getHours()).padStart(2, '0') + ':' + String(today.getMinutes()).padStart(2, '0') + ':' + String(today.getSeconds()).padStart(2, '0') + ' - ';
+  },
+  //------------------------------------------------
+  // Setters
+  //------------------------------------------------
+  setLogLevel: function(logLevel) {
+    this._logLevel = logLevel === 'NONE' ? 0 : (logLevel === 'INFO' ? 1 : 2);
+  },
+  //------------------------------------------------
+  // Getters
+  //------------------------------------------------
+  getLogLevel: function() {
+    return this._logLevel; 
   },
   //------------------------------------------------
   // Public methods
@@ -17,15 +29,11 @@ module.exports = {
     });
   },
   levelAtLeast: function(level) {
-    this._logLevel >= 1 && level === 'INFO' && return true;
-    this._logLevel >= 2 && level === 'DEBUG' && return true;
+    if (this._logLevel >= 1 && level === 'INFO' ||
+        this._logLevel >= 2 && level === 'DEBUG') {
+      return true;
+    }
+
     return false;
   },
-  getLogLevel: function() {
-    return this._logLevel; 
-  },
-  setLogLevel: function(logLevel) {
-    this._logLevel = logLevel;
-  }
 }
-

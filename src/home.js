@@ -13,6 +13,9 @@ module.exports = {
   //------------------------------------------------
   // Setters
   //------------------------------------------------
+  setAwayModeDeviceID: function(awayModeDeviceID) {
+    this._awayModeDeviceID = awayModeDeviceID;
+  },
   setHomeUnoccupied: function(homeUnoccupied) {
     this._homeUnoccupied = homeUnoccupied;
   },

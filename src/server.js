@@ -16,7 +16,7 @@ module.exports = {
     });
 
     server.listen(port, () => {
-      log.levelAtLeast('DEBUG') && log.appendToLog(`Server running at ${this._ip}:${_this.port}`));
+      log.levelAtLeast('DEBUG') && log.appendToLog(`Server running at ${this._ip}:${_this.port}`);
     });
   },
   setPort: function(port) {

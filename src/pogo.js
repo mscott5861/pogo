@@ -4,6 +4,7 @@
 const censor = require('./censor'),
       config = require('/etc/home-core/config'),
       dispatch = require('./dispatch'),
+      hubitat = require('./hubitat'),
       inhabitants = require('./inhabitants'),
       home = require('./home'),
       log = require('./log'),
@@ -14,24 +15,21 @@ const censor = require('./censor'),
 class Pogo {
   init() {
     censor.setAbsenceThreshold(config.absenceThreshold);
-    censor.setAwayModeDeviceID(config.awayModeDeviceID);
-    censor.setHomeObject(home);
     
-    dispatch.setHubitatIP(config.hubitatIPAddress);
-    dispatch.setHubitatAccessToken(config.hubitatAccessToken);
-    
+    hubitat.setHubitatIP(config.hubitatIPAddress);
+    hubitat.setHubitatAccessToken(config.hubitatAccessToken);
+    hubitat.setAwayModeDeviceID(config.awayModeDeviceID);
+
     inhabitants.setInhabitants(config.inhabitants);
+    
     log.setLogLevel(config.logLevel);
+    log.levelAtLeast('DEBUG') && log.appendToLog('Service restarted');
 
-    if (config.restarted) {
-      log.levelAtLeast('DEBUG') && log.appendToLog('Service restarted');
-      config.restarted = false;
-    }
-
+    let users = inhabitants.getInhabitants();
 
     const intervalID = setInterval(() => {
-      for (let i in inhabitants.getInhabitants()) {
-        censor.arpPing(inhabitants.getInhabitants()[i]);
+      for (let i in users) {
+        censor.arpPing(users[i]);
       }
     }, config.pingInterval || 10000);
   }

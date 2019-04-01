@@ -1,24 +1,34 @@
 const http = require('http'),
+      hubitat = require('./hubitat'),
       log = require('./log');
 
 
 module.exports = {
-  _hubitatIP: '',
-  _hubitatAccessToken: '',
-  //------------------------------------------------
-  // Setters
-  //------------------------------------------------
-  setHubitatIP: function(ip) {
-    this._hubitatIP = ip;
-  },
-  setHubitatAccessToken: function(token) {
-    this._hubitatAccessToken = token;
-  },
   //------------------------------------------------
   // Public methods
   //------------------------------------------------
+  getDevices: function() {
+    const url = `http://${hubitat.getHubitatIP()}/apps/api/97/devices/all?access_token=${hubitat.getHubitatAccessToken()}`;
+    http.get(url, (res) => {
+      const { statusCode } = res;
+     
+      if (statusCode === 200) {
+        res.setEncoding('utf8');
+        let rawData = '';
+        res.on('data', (chunk) => { rawData += chunk; });
+        res.on('end', () => {
+        try {
+          const parsedData = JSON.parse(rawData);
+          hubitat.setDevices(parsedData);
+        } catch (e) {
+          console.error(e.message);
+        }
+        });
+      }
+    });
+  },
   issueCommandToHubitat: function(deviceID, command) {
-    const url = 'http://' + this._hubitatIP + '/apps/api/97/devices/' + deviceID + '/' + command + '?access_token=' + this._hubitatAccessToken;
+    const url = `http://${hubitat.getHubitatIP()}/apps/api/97/devices/${deviceID}/${command}?access_token=${hubitat.getHubitatAccessToken()}`;
     http.get(url, (res) => {
       const { statusCode } = res;
       
