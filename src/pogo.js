@@ -21,9 +21,15 @@ class Pogo {
     hubitat.setAwayModeDeviceID(config.awayModeDeviceID);
 
     inhabitants.setInhabitants(config.inhabitants);
+    dispatch.getDevices();
     
     log.setLogLevel(config.logLevel);
     log.levelAtLeast('DEBUG') && log.appendToLog('Service restarted');
+
+
+    server.setIP(config.homeCoreIPAddress);
+    server.setPort(config.homeCorePort);
+    server.init();
 
     let users = inhabitants.getInhabitants();
 

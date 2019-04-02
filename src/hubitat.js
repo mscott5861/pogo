@@ -10,7 +10,16 @@ module.exports = {
     this._awayModeDeviceID = awayModeDeviceID;
   },
   setDevices: function(devices) {
-    this._devices = devices;
+    let deviceArray = JSON.parse(devices).map(device => {
+      return {
+        label: device.label,
+        id: device.id,
+        capabilities: device.capabilities,
+        attributes: device.attributes,
+        commands: [...new Set(device.commands.map((dev) => { return dev.command }))]
+      }
+    });
+    this._devices = deviceArray;
   },
   setHubitatAccessToken: function(token) {
     this._hubitatAccessToken = token;

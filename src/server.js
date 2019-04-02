@@ -1,5 +1,7 @@
-const http = require('http'),
-      log = require('./log');
+const express = require('express'),
+      hubitat = require('./hubitat'),
+      log = require('./log'),
+      srvr = express();
 
 
 
@@ -11,13 +13,21 @@ module.exports = {
   // Public methods
   //------------------------------------------------
   init: function() {
-    this._server = http.createServer((req, res) => {
-
+    srvr.get('/devices', (request, response) => {
+      log.levelAtLeast('DEBUG') && log.appendToLog(`Handling request from /devices endpoint`);
+      response.send(hubitat.getDevices());
     });
 
-    server.listen(port, () => {
-      log.levelAtLeast('DEBUG') && log.appendToLog(`Server running at ${this._ip}:${_this.port}`);
+    srvr.listen(this._port, (err) => {
+      if (err) {
+        log.levelAtLeast('INFO') && log.appendToLog(`Error establishing server: ${err}`);
+      }
+
+      log.levelAtLeast('DEBUG') && log.appendToLog(`Server running at ${this._ip}:${this._port}`);
     });
+  },
+  setIP: function(ip) {
+    this._ip = ip;
   },
   setPort: function(port) {
     this._port = port;

@@ -17,12 +17,12 @@ module.exports = {
         let rawData = '';
         res.on('data', (chunk) => { rawData += chunk; });
         res.on('end', () => {
-        try {
-          const parsedData = JSON.parse(rawData);
-          hubitat.setDevices(parsedData);
-        } catch (e) {
-          console.error(e.message);
-        }
+          try {
+            const parsedData = JSON.stringify(rawData);
+            hubitat.setDevices(JSON.parse(parsedData));
+          } catch (e) {
+            console.error(e.message);
+          }
         });
       }
     });
