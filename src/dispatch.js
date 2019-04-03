@@ -33,7 +33,7 @@ module.exports = {
       const { statusCode } = res;
       
       if (statusCode !== 200) {
-        log.levelAtLeast('DEBUG') && log.appendToLog('Request to deviceID #' + deviceID + ' failed (' + url + ')');
+        log.levelAtLeast('DEBUG') && log.appendToLog(`Request to deviceID #${deviceID} failed (${url})`);
       }
     });
   }
