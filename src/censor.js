@@ -33,6 +33,7 @@ module.exports = {
       log.levelAtLeast('INFO') && log.appendToLog('Home is empty');
       log.levelAtLeast('DEBUG') && log.appendToLog(JSON.stringify(users));
       dispatch.issueCommandToHubitat(hubitat.getAwayModeDeviceID(), 'on');
+      hubitat.setCurrentMode('Away');
     }
   },
   //------------------------------------------------
@@ -44,7 +45,8 @@ module.exports = {
         let timeElapsed = Date.now() - inhabitant.lastPresent,
             absenceThreshold = this._absenceThreshold || 400000;
 
-        if (inhabitant.present && timeElapsed > absenceThreshold) {
+
+        if ((inhabitant.present || inhabitant.present === null) && timeElapsed > absenceThreshold) {
           inhabitant.present = false;
           log.levelAtLeast('INFO') > 0 && log.appendToLog(inhabitant.name + ' departed');
           dispatch.issueCommandToHubitat(inhabitant.deviceID, 'off');

@@ -12,7 +12,7 @@ module.exports = {
   // Setters
   //------------------------------------------------
   setLogLevel: function(logLevel) {
-    this._logLevel = logLevel === 'NONE' ? 0 : (logLevel === 'INFO' ? 1 : 2);
+    this._logLevel = logLevel === 'NONE' ? 0 : (logLevel === 'INFO' ? 1 : (logLevel === 'DEBUG' ? 2 : 3));
   },
   //------------------------------------------------
   // Getters
@@ -30,7 +30,8 @@ module.exports = {
   },
   levelAtLeast: function(level) {
     if (this._logLevel >= 1 && level === 'INFO' ||
-        this._logLevel >= 2 && level === 'DEBUG') {
+        this._logLevel >= 2 && level === 'DEBUG' ||
+        this._logLevel === 3 && level === 'VERBOSE') {
       return true;
     }
 

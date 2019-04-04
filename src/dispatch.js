@@ -7,7 +7,7 @@ module.exports = {
   //------------------------------------------------
   // Public methods
   //------------------------------------------------
-  getDevices: function() {
+  getHubitatDevices: function() {
     const url = `http://${hubitat.getHubitatIP()}/apps/api/97/devices/all?access_token=${hubitat.getHubitatAccessToken()}`;
     http.get(url, (res) => {
       const { statusCode } = res;
@@ -19,7 +19,7 @@ module.exports = {
         res.on('end', () => {
           try {
             const parsedData = JSON.stringify(rawData);
-            hubitat.setDevices(JSON.parse(parsedData));
+            hubitat.populateDevices(JSON.parse(parsedData));
           } catch (e) {
             console.error(e.message);
           }
