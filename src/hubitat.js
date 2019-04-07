@@ -17,7 +17,7 @@ module.exports = {
   setDevices: function(devices) {
     this._devices = devices;
   },
-    setHubitatAccessToken: function(token) {
+  setHubitatAccessToken: function(token) {
     this._hubitatAccessToken = token;
   },
   setHubitatIP: function(ip) {
@@ -75,5 +75,11 @@ module.exports = {
     this.setDevices(deviceArray);
     this.setSwitches(switchArray);
   },
+  updateSwitchStatus: function(deviceID, command) {
+    let swtch = this._switches.find(device => {
+      return device.id === deviceID;
+    });
 
+    swtch.attributes.switch = command;
+  }
 }

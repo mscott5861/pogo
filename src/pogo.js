@@ -8,7 +8,7 @@ const censor = require('./censor'),
       inhabitants = require('./inhabitants'),
       home = require('./home'),
       log = require('./log'),
-      server = require('./server');
+      serverWS = require('./server-ws');
 
 
 
@@ -26,9 +26,9 @@ class Pogo {
     log.setLogLevel(config.logLevel);
     log.levelAtLeast('DEBUG') && log.appendToLog('Service restarted');
 
-    server.setIP(config.homeCoreIPAddress);
-    server.setPort(config.homeCorePort);
-    server.init();
+    serverWS.setIP(config.homeCoreIPAddress);
+    serverWS.setPort(config.homeCorePort);
+    serverWS.init();
 
     let users = inhabitants.getInhabitants();
 

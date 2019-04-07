@@ -4,7 +4,8 @@
   "description": "Present On, Gone Off",
   "main": "pogo.js",
   "scripts": {
-    "start": "sudo node src/pogo.js"
+    "start": "sudo node src/pogo.js",
+    "test": "mocha --timeout 10000"
   },
   "repository": {
     "type": "git",
@@ -22,9 +23,12 @@
   },
   "devDependencies": {
     "arping": "^0.1.0",
+    "chai": "^4.2.0",
+    "mocha": "^6.0.2",
     "raw-socket": "^1.6.4"
   },
   "dependencies": {
-    "express": "^4.16.4"
+    "express": "^4.16.4",
+    "ws": "^6.2.1"
   }
 }

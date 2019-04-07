@@ -31,7 +31,7 @@ module.exports = {
     if (everyoneAbsent) {
       home.setHomeUnoccupied(true);
       log.levelAtLeast('INFO') && log.appendToLog('Home is empty');
-      log.levelAtLeast('DEBUG') && log.appendToLog(JSON.stringify(users));
+      log.levelAtLeast('VERBOSE') && log.appendToLog(JSON.stringify(users));
       dispatch.issueCommandToHubitat(hubitat.getAwayModeDeviceID(), 'on');
       hubitat.setCurrentMode('Away');
     }
@@ -48,7 +48,7 @@ module.exports = {
 
         if ((inhabitant.present || inhabitant.present === null) && timeElapsed > absenceThreshold) {
           inhabitant.present = false;
-          log.levelAtLeast('INFO') > 0 && log.appendToLog(inhabitant.name + ' departed');
+          log.levelAtLeast('INFO') && log.appendToLog(inhabitant.name + ' departed');
           dispatch.issueCommandToHubitat(inhabitant.deviceID, 'off');
           this._checkCumulativePresence();
         }
