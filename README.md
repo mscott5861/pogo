@@ -1,10 +1,8 @@
 ### POGO (Present: On, Gone: Off)
 
-A Node.js experiment in using `arp ping` to establish presence of home inhabitants. ARP ping is reported to be more reliable than ICMP for this use particular use case, which involves establishing presence through confirming network connectivity of Android phones, each operating on Oreo or above.
+A project that started off as a Node.js experiment in using `arp ping` to establish presence of home inhabitants. ARP ping is reported to be more reliable than ICMP for this use particular use case, which involves establishing presence through confirming network connectivity of Android phones, each operating on Oreo or above.
 
-Intended for use with the Hubitat HA platform.
-
-The end goal is to develop a centralized means of reliably tracking presence for all home inhabitants, a notoriously difficult problem to solve in home automation.
+Intended for use with the Hubitat HA platform. Currently being expanded to serve as a middleman between the Hubitat server and any number of mobile clients, with the additional goal of eventually managing RTSP/RTP streams and shipping frames off to an Nvidia Jetson Nano for ML analysis.
 
 ### Dependencies
 
