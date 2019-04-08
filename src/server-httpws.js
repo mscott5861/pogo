@@ -7,29 +7,23 @@ const express = require('express'),
 
 
 module.exports = {
-  _ws: {},
   _ip: '',
   _port: 0,
-  _https: {},
+  _ws: {},
   //------------------------------------------------
-  // Setters
+  // Private methods
   //------------------------------------------------
-  setIP: function(ip) {
-    this._ip = ip;
+  _send: function(msg) {
+    this._ws.send(msg, function ack(err) {
+      if (err) {
+        log.levelAtLeast('INFO') && log.appendToLog(`WS send error: ${err}`);
+      }
+    });
   },
-  setPort: function(port) {
-    this._port = port;
-  },
-  getIP: function() {
-    return this._ip;
-  },
-  getPort: function() {
-    return this._port;
-  },
-  //------------------------------------------------
-  // Public methods
-  //------------------------------------------------
   _setRoutes: function() {
+    //------------------------------------------------
+    // GET
+    //------------------------------------------------
     ExpressServer.get('/current-mode', (request, response) => {
       log.levelAtLeast('VERBOSE') && log.appendToLog(`Handling request from /current-mode endpoint`);
       response.send(hubitat.getCurrentMode());
@@ -37,7 +31,6 @@ module.exports = {
 
 
     ExpressServer.get('/devices', (request, response) => {
-      console.log("Got a request for devices.");
       log.levelAtLeast('VERBOSE') && log.appendToLog(`Handling request from /devices endpoint`);
       response.send(hubitat.getDevices());
     });
@@ -54,30 +47,6 @@ module.exports = {
     ExpressServer.get('/inhabitants', (request, response) => {
       log.levelAtLeast('VERBOSE') && log.appendToLog(`Handling request from /inhabitants endpoint`);
       response.send(inhabitants.getInhabitants());
-    });
-
-
-    ExpressServer.put('/mode/:mode', (request, response) => {
-      let mode = request.params.mode;
-
-      log.levelAtLeast('INFO') && log.appendToLog(`Home mode was changed to ${mode} by Hubitat`);
-      hubitat.setCurrentMode(mode);
-      this._send(`Setting this new mode of ${mode}`);
-    });
-
-
-    ExpressServer.put('/switchCommand/:deviceID/:command', (request, response) => {
-      let deviceID = request.params.deviceID,
-          command = request.params.command;
-
-      log.levelAtLeast('INFO') && log.appendToLog(`Device ${deviceID} received ${command} command`);
-      hubitat.updateSwitchStatus(deviceID, command);
-    });
-
-
-    ExpressServer.put('/alert/:type', (request, response) => {
-      let alert = request.params.type;
-      log.levelAtLeast('INFO') && log.appendToLog(`Received an alert from Hubitat: ${alert}`);
     });
 
 
@@ -99,12 +68,58 @@ module.exports = {
       log.levelAtLeast('VERBOSE') && log.appendToLog(`Handling request from /switches/{id} endpoint`);
       response.send(hubitat.getSwitch(id));
     });
+    //------------------------------------------------
+    // PUT
+    //------------------------------------------------
+    ExpressServer.put('/alert/:type', (request, response) => {
+      let alert = request.params.type;
+      log.levelAtLeast('INFO') && log.appendToLog(`Received an alert from Hubitat: ${alert}`);
+    });
+
+
+    ExpressServer.put('/mode/:mode', (request, response) => {
+      let mode = request.params.mode;
+
+      log.levelAtLeast('INFO') && log.appendToLog(`Home mode was changed to ${mode} by Hubitat`);
+      hubitat.setCurrentMode(mode);
+      this._send(`Setting this new mode of ${mode}`);
+    });
+
+
+    ExpressServer.put('/switchCommand/:deviceID/:command', (request, response) => {
+      let deviceID = request.params.deviceID,
+          command = request.params.command;
+
+      log.levelAtLeast('INFO') && log.appendToLog(`Device ${deviceID} received ${command} command`);
+      hubitat.updateSwitchStatus(deviceID, command);
+    });
   },
+  //------------------------------------------------
+  // Setters
+  //------------------------------------------------
+  setIP: function(ip) {
+    this._ip = ip;
+  },
+  setPort: function(port) {
+    this._port = port;
+  },
+  //------------------------------------------------
+  // Setters
+  //------------------------------------------------
+  getIP: function() {
+    return this._ip;
+  },
+  getPort: function() {
+    return this._port;
+  },
+  //------------------------------------------------
+  // Public methods
+  //------------------------------------------------
   init: function() {
     this._setRoutes();
     
-    const _this = this;
-    const wss = new WSServer({ 
+    const _this = this,
+          wss = new WSServer({ 
       server: HTTPServer 
     });
 
@@ -125,8 +140,5 @@ module.exports = {
     HTTPServer.listen(this.getPort(), function() {
       log.levelAtLeast('INFO') && log.appendToLog(`HTTP/WS server listening at address ${_this.getIP()}:${_this.getPort()}`);
     });
-  },
-  _send: function(msg) {
-    this._ws.send(msg);
+    },
   }
-}
