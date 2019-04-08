@@ -56,6 +56,14 @@ module.exports = {
   awayModeDeviceID: "away-mode-virtual-switch-device-id-from-maker-api",
 }
 ```
-### Current State
+### Current State: Usage
 
-Inspect your log (`tail -20 /var/log/pogo.log`) to confirm against manual records of presence.
+At a minimum, this has proven extremely reliable in automatically setting `Away` mode on my hub, with no false positives
+over 2+ weeks of usage. You'll need a few things for this:
+
+1. A virtual switch on your hub and its device ID
+2. Some Groovy set up (or possibly Rule Machine; I haven't used it) to toggle between modes depending on the switch's state
+3. The Maker API activated on your hub
+4. Your hub's IP and an access token (add these to the `config.js` file
+
+That should get you a functional presence detector. More to come!
