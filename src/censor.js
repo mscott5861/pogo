@@ -3,8 +3,8 @@ const arp = require('arping'),
       home = require('./home'),
       hubitat = require('./hubitat'),
       inhabitants = require('./inhabitants'),
-      log = require('./log');
-
+      log = require('./log'),
+      serverHTTPWS = require('./server-httpws');
 
 
 module.exports = {
@@ -50,12 +50,14 @@ module.exports = {
           inhabitant.present = false;
           log.levelAtLeast('INFO') && log.appendToLog(inhabitant.name + ' departed');
           dispatch.issueCommandToHubitat(inhabitant.deviceID, 'off');
+          serverHTTPWS.sendToWSClient(`INHABITANT: ${inhabitant}`);
           this._checkCumulativePresence();
         }
       } else {
         if (!inhabitant.present) {
           log.levelAtLeast('INFO') && log.appendToLog(inhabitant.name + ' arrived');
           dispatch.issueCommandToHubitat(inhabitant.deviceID, 'on');
+          serverHTTPWS.sendToWSClient(`INHABITANT: ${inhabitant}`);
         }
 
         inhabitant.lastPresent = Date.now();

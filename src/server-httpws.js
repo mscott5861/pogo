@@ -13,7 +13,7 @@ module.exports = {
   //------------------------------------------------
   // Private methods
   //------------------------------------------------
-  _send: function(msg) {
+  sendToWSClient: function(msg) {
     this._ws.send(msg, function ack(err) {
       if (err) {
         log.levelAtLeast('INFO') && log.appendToLog(`WS send error: ${err}`);
@@ -74,6 +74,7 @@ module.exports = {
     ExpressServer.put('/alert/:type', (request, response) => {
       let alert = request.params.type;
       log.levelAtLeast('INFO') && log.appendToLog(`Received an alert from Hubitat: ${alert}`);
+      this.sendToWSClient(`ALERT: ${alert}`);
     });
 
 
@@ -82,7 +83,7 @@ module.exports = {
 
       log.levelAtLeast('INFO') && log.appendToLog(`Home mode was changed to ${mode} by Hubitat`);
       hubitat.setCurrentMode(mode);
-      this._send(`Setting this new mode of ${mode}`);
+      this.sendToWSClient(`MODE: ${mode}`);
     });
 
 
