@@ -2,7 +2,7 @@
 
 A project that started off as a Node.js experiment in using `arp ping` to establish presence of home inhabitants. ARP ping is reported to be more reliable than ICMP for this use particular use case, which involves establishing presence through confirming network connectivity of Android phones, each operating on Oreo or above.
 
-Intended for use with the Hubitat HA platform. Currently being expanded to serve as a middleman between the Hubitat hub and any number of mobile clients (being developed in React Native in a separate, private repo), with the additional goal of eventually managing RTSP/RTP streams and shipping frames off to an Nvidia Jetson Nano for ML analysis.
+Intended for use with the Hubitat HA platform. Currently being expanded to serve as a middleman between the Hubitat hub and any number of mobile clients (being developed in React Native in a separate, private repo), with the long-term goal of managing RTSP/RTP streams and shipping frames off to an Nvidia Jetson Nano for ML analysis, intended to enable intelligent, entity-driven mode-setting, alerting, recording, and HA behvaior tailored to each user and driven by their presence/absence in areas with live RTSP streams.
 
 ### Dependencies
 
