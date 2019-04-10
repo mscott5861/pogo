@@ -9,12 +9,12 @@ const express = require('express'),
 module.exports = {
   _ip: '',
   _port: 0,
-  _ws: {},
+  _ws: null,
   //------------------------------------------------
   // Private methods
   //------------------------------------------------
   sendToWSClient: function(msg) {
-    this._ws.send(msg, function ack(err) {
+    this._ws && this._ws.send(msg, function ack(err) {
       if (err) {
         log.levelAtLeast('INFO') && log.appendToLog(`WS send error: ${err}`);
       }
