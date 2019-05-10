@@ -8,7 +8,8 @@ const censor = require('./censor'),
       inhabitants = require('./inhabitants'),
       home = require('./home'),
       log = require('./log'),
-      serverHTTPWS = require('./server-httpws');
+      serverHTTPWS = require('./server-httpws'),
+      FFMpeg = require('./ffmpeg');
 
 
 
@@ -40,7 +41,28 @@ class Pogo {
     serverHTTPWS.setPort(config.homeCorePort);
     serverHTTPWS.init();
 
-    let users = inhabitants.getInhabitants();
+    let users = inhabitants.getInhabitants(),
+        FFMpegInstances = [];
+
+    console.log(config.FFMpegOptions);
+    for (const camURL of config.FFMpegOptions.camURLs) {
+      let FFMpegInstance = new FFMpeg();
+
+      FFMpegInstance.setOptions({
+        input: camURL,
+      });
+
+      console.log(FFMpegInstance.getFFMpegArgs());
+
+      FFMpegInstance.on('data', (data) => {
+        console.log(`data: ${data}`);
+      });
+
+      FFMpegInstance.start();
+
+      FFMpegInstances.push(FFMpegInstance);
+    }
+
 
     const intervalID = setInterval(() => {
       for (let i in users) {
@@ -49,7 +71,6 @@ class Pogo {
     }, config.pingInterval || 10000);
   }
 }
-
 
 
 const pogo = new Pogo();
